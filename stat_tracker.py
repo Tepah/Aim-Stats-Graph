@@ -2,6 +2,11 @@ import json
 from datetime import datetime
 import matplotlib.pyplot as plt
 
+
+def add_new_mode():
+    answer = input("Add the mode that you want to track: \n")
+    full_data['modes'].append({'type':answer})
+
 # read the data file into the system
 filename = 'data/aim_data.json'
 try:
@@ -19,13 +24,15 @@ if full_data['modes']:
     for value, mode in enumerate(full_data['modes']):
         print(f"{value} {mode['type']}")
     print(f"{value+1} add new mode")
-    answer =  input()
+    answer =  int(input())
+    if answer == (value+1):
+        add_new_mode()
+    for value, mode in enumerate(full_data['modes']):
+        if answer == value:
+            data = mode[answer]
 else:
     add_new_mode()
 
 with open(filename, 'w') as f:
     json.dump(full_data, f)
 
-def add_new_mode():
-    answer = input("Add the mode that you want to track: \n")
-    full_data['modes'].append({'type':answer})
