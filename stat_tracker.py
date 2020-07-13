@@ -1,12 +1,60 @@
 import json
 from datetime import datetime
+from datetime import date
 import matplotlib.pyplot as plt
 
 
 def add_new_mode(all_modes):
+    """Adds a new mode to the json dictionary
+
+    Args:
+        all_modes (dictionary): 
+
+    Returns:
+        [type]: [description]
+    """
     answer = input("Add the mode that you want to track: \n")
-    all_modes.append({'name':answer})
+# Creates a new mode
+    all_modes.append({'name':answer, 'date': [], 'high': [], 'low': [],
+    'high_acc': [], 'low_acc': []})
     return all_modes[-1]
+
+def add_stats(mode):
+    """Adds stats for the current game mode
+
+    Args:
+        mode (dictionary): The mode that we want to modify and add to.
+    """
+    if not mode['date']:
+        mode["date"].append(date.today())
+        mode['high'].append(0)
+        mode['low'].append(99999999)
+        mode['high_acc'].append(0)
+        mode['low_acc'].append(0)
+    elif date.today() != mode["date"][-1]:
+        mode["date"].append(date.today())
+        mode['high'].append(0)
+        mode['low'].append(99999999)
+        mode['high_acc'].append(0)
+        mode['low_acc'].append(0)
+    
+    while True:
+        
+        try:
+            score = float(input('Please put in your score: '))
+            acc = float(input('Please put in your accuracy: %'))
+            if score > mode["high"][-1]:
+                mode['high'][-1] = score
+                mode['high_acc'][-1] = acc
+            elif score < mode['low'][-1]:
+                mode['low'][-1] = score
+                mode['low_acc'][-1] = acc
+        except ValueError:
+            print('Please enter another value.')
+        escape = input("Put in more scores? Y/N: ")
+        if escape.lower() == 'n':
+            break
+    return mode
 
 def choose_mode(all_modes):
     """
@@ -20,8 +68,7 @@ def choose_mode(all_modes):
             print(f"{value}: {mode['name']}")
         print(f"{value+1}: Add new mode")
         answer =  int(input())
-        error = "That is not one of the choices. \n\
-                Please choose from: "
+        error = "That is not one of the choices. \n"
         try:
             if answer == (value+1):
                 add_new_mode(all_modes)
@@ -62,7 +109,10 @@ else:
 # adds new mode and sets it as default
     add_new_mode(full_data['modes'])
     new_mode = True
+    index = 0
 
+if new_mode:
+    full_data['modes'][index] = add_stats(full_data['modes'][index])
 
 with open(filename, 'w') as f:
-    json.dump(full_data, f)
+    json.dump(full_data, f, default=str)
