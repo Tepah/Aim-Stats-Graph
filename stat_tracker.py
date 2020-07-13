@@ -25,21 +25,32 @@ def add_stats(mode):
     Args:
         mode (dictionary): The mode that we want to modify and add to.
     """
+    today = date.today()
     if not mode['date']:
-        mode["date"].append(date.today())
-        mode['high'].append(0)
-        mode['low'].append(99999999)
-        mode['high_acc'].append(0)
-        mode['low_acc'].append(0)
-    elif date.today() != mode["date"][-1]:
-        mode["date"].append(date.today())
-        mode['high'].append(0)
-        mode['low'].append(99999999)
-        mode['high_acc'].append(0)
-        mode['low_acc'].append(0)
+        _initialize_new_date(mode)
+    elif today.strftime('%Y-%m-%d') != mode["date"][-1]:
+        _initialize_new_date(mode)
     
+    mode = _input_scores(mode)
+    return mode
+
+def _initialize_new_date(mode):
+    mode["date"].append(date.today())
+    mode['high'].append(0)
+    mode['low'].append(99999999)
+    mode['high_acc'].append(0)
+    mode['low_acc'].append(0)
+
+def _input_scores(mode):
+    """A function to input and place scores into the data
+
+    Args:
+        mode (dictionary): The mode that we want to modify and add to
+
+    Returns:
+        dictionary: a modified dictionary with new values.
+    """
     while True:
-        
         try:
             score = float(input('Please put in your score: '))
             acc = float(input('Please put in your accuracy: %'))
@@ -112,6 +123,10 @@ else:
     index = 0
 
 if new_mode:
+    full_data['modes'][index] = add_stats(full_data['modes'][index])
+
+ans = input('Do you want to add scores to this mode for today? Y/N: ')
+if ans.lower() == 'y':
     full_data['modes'][index] = add_stats(full_data['modes'][index])
 
 with open(filename, 'w') as f:
