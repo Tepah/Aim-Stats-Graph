@@ -97,30 +97,44 @@ def choose_mode(all_modes):
         break
     return answer
 
-def check_new(full_data):
-    """A bool stating whether or not mode_data is a new mode
+def show_score_graph(full_data, index):
+    """Puts information into lists to later put into a graph
 
-    full_data(dictionary): a copy of the data.json file
+    Args:
+        full_data (Dictionary): All the data from the json file
+        index (int): selects which mode we want to check
     """
-    new_mode = False
-    if full_data['modes']:
-    # reads the modes that have already been input and lets the user choose.
-        amount_before = len(full_data['modes'])
-        index = choose_mode(full_data['modes'])
-        if amount_before < len(full_data['modes']):
-            new_mode = True
-    else:
-    # adds new mode and sets it as default
-        add_new_mode(full_data['modes'])
-        new_mode = True
-        index = 0
-    return new_mode
+    highs =  full_data['modes'][index]['high']
+    lows = full_data['modes'][index]['low']
+    dates = []
+    for date in full_data['modes'][index]['date']:
+        dates.append(datetime.strptime(date, '%Y-%m-%d'))
 
-def show_score_graph(full_data):
-    #TODO: implement the show_score_graph 
+    _plot_graph(highs, lows, dates)
 
-def show_accuracy_graph(full_data):
-    #TODO: implement the show_accuracy_graph
+def _plot_graph(highs, lows, dates):
+    """Plots the highs and lows in a graph
+
+    Args:
+        highs (list): A list of highs
+        lows (list): A list of lows
+        dates (list): A list of dates
+    """
+    plt.style.use('dark_background')
+    fig, ax = plt.subplots()
+    ax.plot(dates, highs, c='blue', alpha=0.5)
+    ax.plot(dates, lows, c='red', alpha=0.5)
+    ax.fill_between(dates, highs, lows, facecolor='blue', alpha=0.1)
+
+    # Format the plot
+    ax.set_title(f"Daily high and low scores for \
+        {full_data['modes'][index]['name']}")
+    ax.set_xlabel('', fontsize=16)
+    fig.autofmt_xdate()
+    ax.set_ylabel("Scores", fontsize=16)
+    ax.tick_params(axis='both', which='major', labelsize = 16)
+
+    plt.show()
 
 # read the data file into the system
 filename = 'data/aim_data.json'
@@ -133,7 +147,19 @@ except FileNotFoundError:
     with open(filename, 'w') as f:
         json.dump(full_data, f)
 
-new_mode = check_new(full_data)
+new_mode = False
+if full_data['modes']:
+# reads the modes that have already been input and lets the user choose.
+    amount_before = len(full_data['modes'])
+    index = choose_mode(full_data['modes'])
+    if amount_before < len(full_data['modes']):
+        new_mode = True
+else:
+# adds new mode and sets it as default
+    add_new_mode(full_data['modes'])
+    new_mode = True
+    index = 0
+    
 if new_mode:
     full_data['modes'][index] = add_stats(full_data['modes'][index])
 
@@ -146,8 +172,4 @@ with open(filename, 'w') as f:
 
 ans = input('Do you want to see your chart for highs and lows? Y/N: ')
 if ans.lower() == 'y':
-    show_score_graph(full_data)
-
-ans = input('Do you want to see your chart for accuracy? Y/N: ')
-if ans.lower() == 'y':
-    show_accuracy_graph(full_data)
+    show_score_graph(full_data, index)
