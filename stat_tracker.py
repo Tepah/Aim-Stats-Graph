@@ -26,6 +26,7 @@ def add_stats(mode):
     Args:
         mode (dictionary): The mode that we want to modify and add to.
     """
+    # TODO: Is this working? 
     today = date.today()
     if not mode['date']:
         _initialize_new_date(mode)
@@ -54,7 +55,7 @@ def _input_scores(mode):
     while True:
         try:
             score = float(input('Please put in your score: '))
-            acc = float(input('Please put in your accuracy: %'))
+            acc = float(input('Please put in your accuracy(%): '))
             if score > mode["high"][-1]:
                 mode['high'][-1] = score
                 mode['high_acc'][-1] = acc
@@ -63,6 +64,7 @@ def _input_scores(mode):
                 mode['low_acc'][-1] = acc
         except ValueError:
             print('Please enter another value.')
+            continue
         escape = input("Put in more scores? Y/N: ")
         if escape.lower() == 'n':
             break
@@ -109,7 +111,10 @@ def show_score_graph(full_data, index):
     lows = full_data['modes'][index]['low']
     dates = []
     for date in full_data['modes'][index]['date']:
-        dates.append(datetime.strptime(date, '%Y-%m-%d'))
+        try:
+            dates.append(datetime.strptime(date, '%Y-%m-%d'))
+        except TypeError:
+            dates.append(date)
 
     _plot_graph(highs, lows, dates)
 
@@ -164,10 +169,10 @@ else:
     
 if new_mode:
     full_data['modes'][index] = add_stats(full_data['modes'][index])
-
-ans = input('Do you want to add scores to this mode for today? Y/N: ')
-if ans.lower() == 'y':
-    full_data['modes'][index] = add_stats(full_data['modes'][index])
+else:
+    ans = input('Do you want to add scores to this mode for today? Y/N: ')
+    if ans.lower() == 'y':
+        full_data['modes'][index] = add_stats(full_data['modes'][index])
 
 with open(filename, 'w') as f:
     json.dump(full_data, f, default=str)
