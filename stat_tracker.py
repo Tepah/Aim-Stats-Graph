@@ -2,7 +2,8 @@ import json
 from datetime import datetime
 from datetime import date
 import matplotlib.pyplot as plt
-
+# TODO: Clean and refractor a bit
+# TODO: wrap in a while loop to continue use
 
 def add_new_mode(all_modes):
     """Adds a new mode to the json dictionary
@@ -133,6 +134,7 @@ def _plot_graph(highs, lows, dates):
     fig.autofmt_xdate()
     ax.set_ylabel("Scores", fontsize=16)
     ax.tick_params(axis='both', which='major', labelsize = 16)
+    # TODO: How to do hover data points??
 
     plt.show()
 
