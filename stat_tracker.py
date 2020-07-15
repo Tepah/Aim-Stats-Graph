@@ -109,12 +109,18 @@ def check_new(full_data):
         index = choose_mode(full_data['modes'])
         if amount_before < len(full_data['modes']):
             new_mode = True
-        else:
-        # adds new mode and sets it as default
-            add_new_mode(full_data['modes'])
-            new_mode = True
-            index = 0
+    else:
+    # adds new mode and sets it as default
+        add_new_mode(full_data['modes'])
+        new_mode = True
+        index = 0
     return new_mode
+
+def show_score_graph(full_data):
+    #TODO: implement the show_score_graph 
+
+def show_accuracy_graph(full_data):
+    #TODO: implement the show_accuracy_graph
 
 # read the data file into the system
 filename = 'data/aim_data.json'
@@ -137,3 +143,11 @@ if ans.lower() == 'y':
 
 with open(filename, 'w') as f:
     json.dump(full_data, f, default=str)
+
+ans = input('Do you want to see your chart for highs and lows? Y/N: ')
+if ans.lower() == 'y':
+    show_score_graph(full_data)
+
+ans = input('Do you want to see your chart for accuracy? Y/N: ')
+if ans.lower() == 'y':
+    show_accuracy_graph(full_data)
