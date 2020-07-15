@@ -14,7 +14,7 @@ def add_new_mode(all_modes):
         [type]: [description]
     """
     answer = input("Add the mode that you want to track: \n")
-# Creates a new mode
+    # Creates a new mode
     all_modes.append({'name':answer, 'date': [], 'high': [], 'low': [],
     'high_acc': [], 'low_acc': []})
     return all_modes[-1]
@@ -97,6 +97,25 @@ def choose_mode(all_modes):
         break
     return answer
 
+def check_new(full_data):
+    """A bool stating whether or not mode_data is a new mode
+
+    full_data(dictionary): a copy of the data.json file
+    """
+    new_mode = False
+    if full_data['modes']:
+    # reads the modes that have already been input and lets the user choose.
+        amount_before = len(full_data['modes'])
+        index = choose_mode(full_data['modes'])
+        if amount_before < len(full_data['modes']):
+            new_mode = True
+        else:
+        # adds new mode and sets it as default
+            add_new_mode(full_data['modes'])
+            new_mode = True
+            index = 0
+    return new_mode
+
 # read the data file into the system
 filename = 'data/aim_data.json'
 try:
@@ -108,20 +127,7 @@ except FileNotFoundError:
     with open(filename, 'w') as f:
         json.dump(full_data, f)
 
-# A bool stating whether or not mode_data is a new mode
-new_mode = False
-if full_data['modes']:
-# reads the modes that have already been input and lets the user choose.
-    amount_before = len(full_data['modes'])
-    index = choose_mode(full_data['modes'])
-    if amount_before < len(full_data['modes']):
-        new_mode = True
-else:
-# adds new mode and sets it as default
-    add_new_mode(full_data['modes'])
-    new_mode = True
-    index = 0
-
+new_mode = check_new(full_data)
 if new_mode:
     full_data['modes'][index] = add_stats(full_data['modes'][index])
 
