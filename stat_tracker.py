@@ -143,40 +143,45 @@ def _plot_graph(highs, lows, dates):
 
     plt.show()
 
-# read the data file into the system
-filename = 'data/aim_data.json'
-try:
-    with open(filename) as f:
-        full_data = json.load(f)
-except FileNotFoundError:
-# creates the data file if none is found.
-    full_data = {'modes':[]}
-    with open(filename, 'w') as f:
-        json.dump(full_data, f)
+while True:
+    # read the data file into the system
+    filename = 'data/aim_data.json'
+    try:
+        with open(filename) as f:
+            full_data = json.load(f)
+    except FileNotFoundError:
+    # creates the data file if none is found.
+        full_data = {'modes':[]}
+        with open(filename, 'w') as f:
+            json.dump(full_data, f)
 
-new_mode = False
-if full_data['modes']:
-# reads the modes that have already been input and lets the user choose.
-    amount_before = len(full_data['modes'])
-    index = choose_mode(full_data['modes'])
-    if amount_before < len(full_data['modes']):
+    new_mode = False
+    if full_data['modes']:
+    # reads the modes that have already been input and lets the user choose.
+        amount_before = len(full_data['modes'])
+        index = choose_mode(full_data['modes'])
+        if amount_before < len(full_data['modes']):
+            new_mode = True
+    else:
+    # adds new mode and sets it as default
+        add_new_mode(full_data['modes'])
         new_mode = True
-else:
-# adds new mode and sets it as default
-    add_new_mode(full_data['modes'])
-    new_mode = True
-    index = 0
-    
-if new_mode:
-    full_data['modes'][index] = add_stats(full_data['modes'][index])
-else:
-    ans = input('Do you want to add scores to this mode for today? Y/N: ')
-    if ans.lower() == 'y':
+        index = 0
+        
+    if new_mode:
         full_data['modes'][index] = add_stats(full_data['modes'][index])
+    else:
+        ans = input('Do you want to add scores to this mode for today? Y/N: ')
+        if ans.lower() == 'y':
+            full_data['modes'][index] = add_stats(full_data['modes'][index])
 
-with open(filename, 'w') as f:
-    json.dump(full_data, f, default=str)
+    with open(filename, 'w') as f:
+        json.dump(full_data, f, default=str)
 
-ans = input('Do you want to see your chart for highs and lows? Y/N: ')
-if ans.lower() == 'y':
-    show_score_graph(full_data, index)
+    ans = input('Do you want to see your chart for highs and lows? Y/N: ')
+    if ans.lower() == 'y':
+        show_score_graph(full_data, index)
+
+    ans = input("Do you want to continue? Y/N: ")
+    if ans.lower() == 'n':
+        break
