@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import date
 import matplotlib.pyplot as plt
 # TODO: Clean and refractor a bit
-# TODO: wrap in a while loop to continue use
 
 def add_new_mode(all_modes):
     """Adds a new mode to the json dictionary
@@ -37,6 +36,11 @@ def add_stats(mode):
     return mode
 
 def _initialize_new_date(mode):
+    """Creates a new date for the mode to add a new high and low
+
+    Args:
+        mode (Dictionary): The mode we're adding a new day to
+    """
     mode["date"].append(date.today())
     mode['high'].append(0)
     mode['low'].append(99999999)
@@ -59,7 +63,7 @@ def _input_scores(mode):
             if score > mode["high"][-1]:
                 mode['high'][-1] = score
                 mode['high_acc'][-1] = acc
-            elif score < mode['low'][-1]:
+            if score < mode['low'][-1]:
                 mode['low'][-1] = score
                 mode['low_acc'][-1] = acc
         except ValueError:
