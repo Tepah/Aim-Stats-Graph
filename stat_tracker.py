@@ -2,7 +2,9 @@ import json
 from datetime import datetime
 from datetime import date
 import matplotlib.pyplot as plt
+import os
 # TODO: Clean and refractor a bit
+
 
 def add_new_mode(all_modes):
     """Adds a new mode to the json dictionary
@@ -147,18 +149,23 @@ def _plot_graph(highs, lows, dates):
 
     plt.show()
 
-while True:
-    # read the data file into the system
-    filename = 'data/aim_data.json'
-    try:
-        with open(filename) as f:
-            full_data = json.load(f)
-    except FileNotFoundError:
-    # creates the data file if none is found.
-        full_data = {'modes':[]}
-        with open(filename, 'w') as f:
-            json.dump(full_data, f)
+# Tries to create the folder needed
+path = "data"
 
+os.mkdir(path)
+
+# read the data file into the system
+filename = 'data/aim_data.json'
+try:
+    with open(filename) as f:
+        full_data = json.load(f)
+except FileNotFoundError:
+# creates the data file if none is found.
+    full_data = {'modes':[]}
+    with open(filename, 'w') as f:
+        json.dump(full_data, f)
+
+while True:
     new_mode = False
     if full_data['modes']:
     # reads the modes that have already been input and lets the user choose.
