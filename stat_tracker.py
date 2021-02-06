@@ -3,6 +3,8 @@ from datetime import datetime
 from datetime import date
 import matplotlib.pyplot as plt
 import os
+
+
 # TODO: Clean and refractor a bit
 
 
@@ -17,9 +19,10 @@ def add_new_mode(all_modes):
     """
     answer = input("Add the mode that you want to track: \n")
     # Creates a new mode
-    all_modes.append({'name':answer, 'date': [], 'high': [], 'low': [],
-    'high_acc': [], 'low_acc': []})
+    all_modes.append({'name': answer, 'date': [], 'high': [], 'low': [],
+                      'high_acc': [], 'low_acc': []})
     return all_modes[-1]
+
 
 def add_stats(mode):
     """Adds stats for the current game mode
@@ -33,9 +36,10 @@ def add_stats(mode):
         _initialize_new_date(mode)
     elif today.strftime('%Y-%m-%d') != mode["date"][-1]:
         _initialize_new_date(mode)
-    
+
     mode = _input_scores(mode)
     return mode
+
 
 def _initialize_new_date(mode):
     """Creates a new date for the mode to add a new high and low
@@ -48,6 +52,7 @@ def _initialize_new_date(mode):
     mode['low'].append(99999999)
     mode['high_acc'].append(0)
     mode['low_acc'].append(0)
+
 
 def _input_scores(mode):
     """A function to input and place scores into the data
@@ -76,6 +81,7 @@ def _input_scores(mode):
             break
     return mode
 
+
 def choose_mode(all_modes):
     """
     Makes the user choose a choice an option from all the modes.
@@ -86,25 +92,26 @@ def choose_mode(all_modes):
         print("Select a mode: ")
         for value, mode in enumerate(all_modes):
             print(f"{value}: {mode['name']}")
-        print(f"{value+1}: Add new mode")
-        answer =  int(input())
+        print(f"{value + 1}: Add new mode")
+        answer = int(input())
         error = "That is not one of the choices. \n"
         try:
-            if answer == (value+1):
+            if answer == (value + 1):
                 add_new_mode(all_modes)
                 answer = -1
-            elif answer < (value+1) and answer >= 0:
+            elif answer < (value + 1) and answer >= 0:
                 for value, mode in enumerate(all_modes):
                     if answer == value:
                         mode_data = answer
-            else: 
+            else:
                 print(error)
                 continue
-        except ValueError: 
+        except ValueError:
             print(error)
             continue
         break
     return answer
+
 
 def show_score_graph(full_data, index):
     """Puts information into lists to later put into a graph
@@ -113,7 +120,7 @@ def show_score_graph(full_data, index):
         full_data (Dictionary): All the data from the json file
         index (int): selects which mode we want to check
     """
-    highs =  full_data['modes'][index]['high']
+    highs = full_data['modes'][index]['high']
     lows = full_data['modes'][index]['low']
     dates = []
     for date in full_data['modes'][index]['date']:
@@ -123,6 +130,7 @@ def show_score_graph(full_data, index):
             dates.append(date)
 
     _plot_graph(highs, lows, dates)
+
 
 def _plot_graph(highs, lows, dates):
     """Plots the highs and lows in a graph
@@ -144,15 +152,17 @@ def _plot_graph(highs, lows, dates):
     ax.set_xlabel('', fontsize=16)
     fig.autofmt_xdate()
     ax.set_ylabel("Scores", fontsize=16)
-    ax.tick_params(axis='both', which='major', labelsize = 16)
+    ax.tick_params(axis='both', which='major', labelsize=16)
     # TODO: How to do hover data points??
 
     plt.show()
 
+
 # Tries to create the folder needed
 path = "data"
 
-os.mkdir(path)
+if os.path.isfile(path):
+    os.mkdir(path)
 
 # read the data file into the system
 filename = 'data/aim_data.json'
@@ -160,25 +170,25 @@ try:
     with open(filename) as f:
         full_data = json.load(f)
 except FileNotFoundError:
-# creates the data file if none is found.
-    full_data = {'modes':[]}
+    # creates the data file if none is found.
+    full_data = {'modes': []}
     with open(filename, 'w') as f:
         json.dump(full_data, f)
 
 while True:
     new_mode = False
     if full_data['modes']:
-    # reads the modes that have already been input and lets the user choose.
+        # reads the modes that have already been input and lets the user choose.
         amount_before = len(full_data['modes'])
         index = choose_mode(full_data['modes'])
         if amount_before < len(full_data['modes']):
             new_mode = True
     else:
-    # adds new mode and sets it as default
+        # adds new mode and sets it as default
         add_new_mode(full_data['modes'])
         new_mode = True
         index = 0
-        
+
     if new_mode:
         full_data['modes'][index] = add_stats(full_data['modes'][index])
     else:
